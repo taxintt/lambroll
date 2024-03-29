@@ -265,17 +265,24 @@ Usage: lambroll rollback
 rollback function
 
 Flags:
-      --dry-run                           dry run
-      --delete-version                    delete rolled back version
+      --dry-run                   dry run
+      --alias="current"           alias to rollback
+      --version=""                version to rollback (default: previous version auto detected)
+      --delete-version            delete rolled back version
 ```
 
-`lambroll deploy` create/update alias `current` to the published function version on deploy.
+`lambroll deploy` create/update alias to the published function version on deploy.
 
 `lambroll rollback` works as below.
 
-1. Find previous one version of function.
-2. Update alias `current` to the previous version.
-3. When `--delete-version` specified, delete old version of function.
+1. Find the previous version from the alias with no other aliases.
+2. Update the alias to the previous version.
+   - If `--version` is specified, update the alias to the specified version.
+3. When `--delete-version` is specified, delete the old version of the function.
+
+If you add multiple aliases to the function, `lambroll rollback --alias={some-alias}` may not work as expected. Because the previous version that auto-detected may be the older version of other aliases.
+
+So you should specify the version to rollback with `--version` flag to clear the ambiguity.
 
 ### Invoke
 
