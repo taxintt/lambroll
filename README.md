@@ -280,6 +280,10 @@ Flags:
    - If `--version` is specified, update the alias to the specified version.
 3. When `--delete-version` is specified, delete the old version of the function.
 
+If you add multiple aliases to the function, `lambroll rollback --alias={some-alias}` may not work as expected. Because the previous version that auto-detected may be the older version of other aliases.
+
+So you should specify the version to rollback with `--version` flag to clear the ambiguity.
+
 ### Invoke
 
 ```
