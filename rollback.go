@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/lambda"
@@ -115,22 +114,6 @@ VERSIONS:
 }
 
 func (app *App) deleteFunctionVersion(ctx context.Context, functionName, version string) error {
-	for {
-		log.Printf("[debug] checking aliased version")
-		res, err := app.lambda.GetAlias(ctx, &lambda.GetAliasInput{
-			FunctionName: aws.String(functionName),
-			Name:         aws.String(CurrentAliasName),
-		})
-		if err != nil {
-			return fmt.Errorf("failed to get alias: %w", err)
-		}
-		if *res.FunctionVersion == version {
-			log.Printf("[debug] version %s still has alias %s, retrying", version, CurrentAliasName)
-			time.Sleep(time.Second)
-			continue
-		}
-		break
-	}
 	log.Printf("[info] deleting function version %s", version)
 	_, err := app.lambda.DeleteFunction(ctx, &lambda.DeleteFunctionInput{
 		FunctionName: aws.String(functionName),
