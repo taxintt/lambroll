@@ -189,7 +189,7 @@ func (app *App) deployFunctionURL(ctx context.Context, fc *FunctionURL, opt *Dep
 func (app *App) deployFunctionURLConfig(ctx context.Context, fc *FunctionURL, opt *DeployOption) error {
 	create := false
 	fqFunctionName := fullQualifiedFunctionName(*fc.Config.FunctionName, fc.Config.Qualifier)
-	functinoUrlConfig, err := app.lambda.GetFunctionUrlConfig(ctx, &lambda.GetFunctionUrlConfigInput{
+	functionUrlConfig, err := app.lambda.GetFunctionUrlConfig(ctx, &lambda.GetFunctionUrlConfigInput{
 		FunctionName: fc.Config.FunctionName,
 		Qualifier:    fc.Config.Qualifier,
 	})
@@ -217,7 +217,7 @@ func (app *App) deployFunctionURLConfig(ctx context.Context, fc *FunctionURL, op
 		log.Printf("[info] Function URL: %s", *res.FunctionUrl)
 	} else {
 		log.Printf("[info] updating function url config for %s", fqFunctionName)
-		if functinoUrlConfig.Cors != nil && fc.Config.Cors == nil {
+		if functionUrlConfig.Cors != nil && fc.Config.Cors == nil {
 			// reset cors config
 			fc.Config.Cors = &types.Cors{}
 		}

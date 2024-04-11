@@ -33,7 +33,7 @@ func (app *App) updateTags(ctx context.Context, fn *Function, opt *DeployOption)
 	setTags, removeTagKeys := mergeTags(tags.Tags, fn.Tags)
 
 	if len(setTags) == 0 && len(removeTagKeys) == 0 {
-		log.Println("[debug] no need to update tags (unchnaged)")
+		log.Println("[debug] no need to update tags (unchanged)")
 		return nil
 	}
 

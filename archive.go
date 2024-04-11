@@ -148,7 +148,7 @@ func addToZip(z *zip.Writer, path, relpath string, info os.FileInfo) error {
 
 func (app *App) uploadFunctionToS3(ctx context.Context, f *os.File, bucket, key string) (string, error) {
 	svc := s3.NewFromConfig(app.awsConfig)
-	log.Printf("[debug] PutObjcet to s3://%s/%s", bucket, key)
+	log.Printf("[debug] PutObject to s3://%s/%s", bucket, key)
 	res, err := svc.PutObject(ctx, &s3.PutObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(key),

@@ -38,7 +38,7 @@ func (app *App) prepareFunctionCodeForDeploy(ctx context.Context, opt *DeployOpt
 		if fn.Code == nil || fn.Code.ImageUri == nil {
 			return fmt.Errorf("PackageType=Image requires Code.ImageUri in function definition")
 		}
-		// deploy docker image. no need to preprare
+		// deploy docker image. no need to prepare
 		log.Printf("[info] using docker image %s", *fn.Code.ImageUri)
 
 		if fn.ImageConfig == nil {

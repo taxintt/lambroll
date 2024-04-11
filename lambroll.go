@@ -52,7 +52,7 @@ func (app *App) functionArn(ctx context.Context, name string) string {
 }
 
 var (
-	// IgnoreFilename defines file name includes ingore patterns at creating zip archive.
+	// IgnoreFilename defines file name includes ignore patterns at creating zip archive.
 	IgnoreFilename = ".lambdaignore"
 
 	// DefaultFunctionFilename defines file name for function definition.
