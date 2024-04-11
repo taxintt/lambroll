@@ -55,7 +55,7 @@ func (app *App) Rollback(ctx context.Context, opt *RollbackOption) error {
 		}
 	}
 
-	log.Printf("[info] rollbacking function version %s to %s %s", currentVersion, prevVersion, opt.label())
+	log.Printf("[info] rolling back function version %s to %s %s", currentVersion, prevVersion, opt.label())
 	if opt.DryRun {
 		return nil
 	}

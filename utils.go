@@ -77,10 +77,10 @@ func unmarshalJSON(src []byte, v interface{}, path string) error {
 	return nil
 }
 
-func findDefinitionFile(preffered string, defaults []string) (string, error) {
-	if preffered != "" {
-		if _, err := os.Stat(preffered); err == nil {
-			return preffered, nil
+func findDefinitionFile(preferred string, defaults []string) (string, error) {
+	if preferred != "" {
+		if _, err := os.Stat(preferred); err == nil {
+			return preferred, nil
 		} else {
 			return "", err
 		}

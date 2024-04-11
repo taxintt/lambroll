@@ -57,7 +57,7 @@ version: 2.1
 orbs:
   lambroll: fujiwara/lambroll@2.0.1
 jobs:
-  deloy:
+  deploy:
     docker:
       - image: cimg/base
     steps:
@@ -116,7 +116,7 @@ $ rm function.zip
 
 See or edit `function.json` or `index.js`.
 
-Now you can deploy `hello` fuction using `lambroll deploy`.
+Now you can deploy `hello` function using `lambroll deploy`.
 
 ```console
 $ lambroll deploy
@@ -227,7 +227,7 @@ Flags:
                                           definition
       --keep-versions=0                   Number of latest versions to keep. Older versions will be deleted. (Optional
                                           value: default 0).
-      --function-url=""                   path to function-url definiton
+      --function-url=""                   path to function-url definition
       --skip-function                     skip to deploy a function. deploy function-url only
       --exclude-file=".lambdaignore"      exclude file
 ```
@@ -384,7 +384,7 @@ If you hope to remove all tags, set `"Tags": {}` expressly.
 
 #### Expand SSM parameter values
 
-At reading the file, lambrol evaluates `{{ ssm }}` syntax in JSON.
+At reading the file, lambroll evaluates `{{ ssm }}` syntax in JSON.
 
 For example,
 
@@ -394,9 +394,9 @@ For example,
 
 SSM parameter value of `/path/to/param` is expanded here.
 
-#### Expand enviroment variables
+#### Expand environment variables
 
-At reading the file, lambrol evaluates `{{ env }}` and `{{ must_env }}` syntax in JSON.
+At reading the file, lambroll evaluates `{{ env }}` and `{{ must_env }}` syntax in JSON.
 
 For example,
 
@@ -424,7 +424,7 @@ Environment variable `FOO` is expanded. When `FOO` is not defined, lambroll will
 }
 ```
 
-#### Enviroment variables from envfile
+#### Environment variables from envfile
 
 `lambroll --envfile .env1 .env2` reads files named .env1 and .env2 as environment files and export variables in these files.
 
@@ -597,7 +597,7 @@ When you want to deploy a private (requires AWS IAM authentication) function URL
 - `Permissions` is optional.
   - If `Permissions` is not defined and `AuthType` is `NONE`, `Principal` is set to `*` automatically.
   - When `AuthType` is `AWS_IAM`, you must define `Permissions` to specify allowed principals.
-  - Each elements of `Permissons` maps to [AddPermissionInput](https://pkg.go.dev/github.com/aws/aws-sdk-go-v2/service/lambda#AddPermissionInput) in AWS SDK Go v2.
+  - Each elements of `Permissions` maps to [AddPermissionInput](https://pkg.go.dev/github.com/aws/aws-sdk-go-v2/service/lambda#AddPermissionInput) in AWS SDK Go v2.
 - `function_url.jsonnet` is also supported like `function.jsonnet`.
 
 ## LICENSE

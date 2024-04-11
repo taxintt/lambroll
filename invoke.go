@@ -14,7 +14,7 @@ import (
 	"github.com/mattn/go-isatty"
 
 	"github.com/aws/aws-sdk-go-v2/service/lambda"
-	typesv2 "github.com/aws/aws-sdk-go-v2/service/lambda/types"
+	"github.com/aws/aws-sdk-go-v2/service/lambda/types"
 )
 
 // InvokeOption represents option for Invoke()
@@ -31,15 +31,15 @@ func (app *App) Invoke(ctx context.Context, opt *InvokeOption) error {
 	if err != nil {
 		return fmt.Errorf("failed to load function: %w", err)
 	}
-	var invocationType typesv2.InvocationType
-	var logType typesv2.LogType
+	var invocationType types.InvocationType
+	var logType types.LogType
 	if opt.Async {
-		invocationType = typesv2.InvocationTypeEvent
+		invocationType = types.InvocationTypeEvent
 	} else {
-		invocationType = typesv2.InvocationTypeRequestResponse
+		invocationType = types.InvocationTypeRequestResponse
 	}
 	if opt.LogTail {
-		logType = typesv2.LogTypeTail
+		logType = types.LogTypeTail
 	}
 
 	var payloadSrc io.Reader

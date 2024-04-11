@@ -16,7 +16,7 @@ import (
 	"github.com/itchyny/gojq"
 )
 
-// DeployOption represens an option for Deploy()
+// DeployOption represents an option for Deploy()
 type DeployOption struct {
 	Src           string `help:"function zip archive or src dir" default:"."`
 	Publish       bool   `help:"publish function" default:"true"`
@@ -26,7 +26,7 @@ type DeployOption struct {
 	SkipArchive   bool   `help:"skip to create zip archive. requires Code.S3Bucket and Code.S3Key in function definition" default:"false"`
 	KeepVersions  int    `help:"Number of latest versions to keep. Older versions will be deleted. (Optional value: default 0)." default:"0"`
 	Ignore        string `help:"ignore fields by jq queries in function.json" default:""`
-	FunctionURL   string `help:"path to function-url definiton" default:"" env:"LAMBROLL_FUNCTION_URL"`
+	FunctionURL   string `help:"path to function-url definition" default:"" env:"LAMBROLL_FUNCTION_URL"`
 	SkipFunction  bool   `help:"skip to deploy a function. deploy function-url only" default:"false"`
 
 	ExcludeFileOption
@@ -227,8 +227,8 @@ func (app *App) Deploy(ctx context.Context, opt *DeployOption) error {
 }
 
 func (app *App) updateFunctionConfiguration(ctx context.Context, in *lambda.UpdateFunctionConfigurationInput) error {
-	retrier := retryPolicy.Start(ctx)
-	for retrier.Continue() {
+	retryer := retryPolicy.Start(ctx)
+	for retryer.Continue() {
 		_, err := app.lambda.UpdateFunctionConfiguration(ctx, in)
 		if err != nil {
 			var rce *types.ResourceConflictException
@@ -245,8 +245,8 @@ func (app *App) updateFunctionConfiguration(ctx context.Context, in *lambda.Upda
 
 func (app *App) updateFunctionCode(ctx context.Context, in *lambda.UpdateFunctionCodeInput) (*lambda.UpdateFunctionCodeOutput, error) {
 	var res *lambda.UpdateFunctionCodeOutput
-	retrier := retryPolicy.Start(ctx)
-	for retrier.Continue() {
+	retryer := retryPolicy.Start(ctx)
+	for retryer.Continue() {
 		var err error
 		res, err = app.lambda.UpdateFunctionCode(ctx, in)
 		if err != nil {
@@ -279,8 +279,8 @@ func (app *App) ensureLastUpdateStatusSuccessful(ctx context.Context, name strin
 }
 
 func (app *App) waitForLastUpdateStatusSuccessful(ctx context.Context, name string) error {
-	retrier := retryPolicy.Start(ctx)
-	for retrier.Continue() {
+	retryer := retryPolicy.Start(ctx)
+	for retryer.Continue() {
 		res, err := app.lambda.GetFunction(ctx, &lambda.GetFunctionInput{
 			FunctionName: aws.String(name),
 		})
