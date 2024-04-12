@@ -208,8 +208,8 @@ func (app *App) diffFunctionURL(ctx context.Context, name string, opt *DiffOptio
 		removesB = append(removesB, b...)
 	}
 	if ds := diff.Diff(string(removesB), string(addsB)); ds != "" {
-		fmt.Println(color.RedString("---"))
-		fmt.Println(color.GreenString("+++"))
+		fmt.Println(color.RedString("--- permissions"))
+		fmt.Println(color.GreenString("+++ permissions"))
 		fmt.Print(coloredDiff(ds))
 	}
 
