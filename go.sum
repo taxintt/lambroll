@@ -148,8 +148,8 @@ github.com/fujiwara/logutils v1.1.2 h1:nYVRyTj+5SyCvpZUrYIZU4kubqNycGTxFXMKJBKe0
 github.com/fujiwara/logutils v1.1.2/go.mod h1:pdb/Uk70rjQWEmFm/OvYH7OG8meZt1fEIqC0qZbvro4=
 github.com/fujiwara/ssm-lookup v0.0.1 h1:qh3KKSg7QSHYpodeg/gkOQZT+8XjpDUFHhcyH/pHE1k=
 github.com/fujiwara/ssm-lookup v0.0.1/go.mod h1:YGhJjvcVrHMVdFU5DttcU7Ft9epNwoS0hZbbnry91s0=
-github.com/fujiwara/tfstate-lookup v1.1.5 h1:dNvtfSqSES0y3V7KprcRu7aThUOlRLzvB3mxCFSPeMo=
-github.com/fujiwara/tfstate-lookup v1.1.5/go.mod h1:G+sFc6osVH71L32pX3+2ibfdhqePPrDZa0ren/QaMYs=
+github.com/fujiwara/tfstate-lookup v1.1.6 h1:IFWGCpJ/mhK0OkWiBGd/0kIgjwE/H6eh9BobLptkebo=
+github.com/fujiwara/tfstate-lookup v1.1.6/go.mod h1:G+sFc6osVH71L32pX3+2ibfdhqePPrDZa0ren/QaMYs=
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20191125211704-12ad95a8df72/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20200222043503-6f7a984d4dc4/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=

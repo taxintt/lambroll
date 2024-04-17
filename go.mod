@@ -14,7 +14,7 @@ require (
 	github.com/fatih/color v1.16.0
 	github.com/fujiwara/logutils v1.1.2
 	github.com/fujiwara/ssm-lookup v0.0.1
-	github.com/fujiwara/tfstate-lookup v1.1.5
+	github.com/fujiwara/tfstate-lookup v1.1.6
 	github.com/go-test/deep v1.1.0
 	github.com/google/go-cmp v0.5.9
 	github.com/google/go-jsonnet v0.20.0
