@@ -71,7 +71,7 @@ func (opt *DeployOption) String() string {
 	return string(b)
 }
 
-// Deploy deployes a new lambda function code
+// Deploy deploys a new lambda function code
 func (app *App) Deploy(ctx context.Context, opt *DeployOption) error {
 	if err := opt.Expand(); err != nil {
 		return err
