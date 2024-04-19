@@ -624,6 +624,8 @@ See also [Restricting access to an AWS Lambda function URL origin](https://docs.
 
 If you need to allow access from any CloudFront distributions in your account, you can specify `SourceArn` as `arn:aws:cloudfront::123456789012:distribution/*`.
 
+Specifying `SourceArn` as `*` is not recommended because it allows access from any CloudFront distribution in any AWS account.
+
 ## LICENSE
 
 MIT License
