@@ -243,7 +243,8 @@ Flags:
 
 lambroll also support to deploy a container image for Lambda.
 
-PackageType=Image and Code.ImageUri are required in function.json.
+`PackageType=Image` and `Code.ImageUri` are required in function.json.
+`ImageConfig` is optional.
 
 ```json
 {
@@ -253,6 +254,15 @@ PackageType=Image and Code.ImageUri are required in function.json.
   "PackageType": "Image",
   "Code": {
     "ImageUri": "012345678912.dkr.ecr.ap-northeast-1.amazonaws.com/lambda/test:latest"
+  },
+  "ImageConfig": {
+    "Command": [
+      "/path/to/bootstrap"
+    ],
+    "WorkingDirectory": "/var/task",
+    "EntryPoint": [
+      "/path/to/entrypoint"
+    ],
   }
 }
 ```

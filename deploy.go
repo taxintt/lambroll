@@ -71,7 +71,7 @@ func (opt *DeployOption) String() string {
 	return string(b)
 }
 
-// Deploy deployes a new lambda function code
+// Deploy deploys a new lambda function code
 func (app *App) Deploy(ctx context.Context, opt *DeployOption) error {
 	if err := opt.Expand(); err != nil {
 		return err
@@ -119,6 +119,10 @@ func (app *App) Deploy(ctx context.Context, opt *DeployOption) error {
 	}
 	fillDefaultValues(fn)
 
+	if err := app.prepareFunctionCodeForDeploy(ctx, opt, fn); err != nil {
+		return fmt.Errorf("failed to prepare function code for deploy: %w", err)
+	}
+
 	if ignore := opt.Ignore; ignore != "" {
 		q, err := gojq.Parse(ignore)
 		if err != nil {
@@ -133,10 +137,6 @@ func (app *App) Deploy(ctx context.Context, opt *DeployOption) error {
 		src, _ := json.Marshal(fnAny)
 		fn = &Function{}
 		unmarshalJSON(src, &fn, app.functionFilePath)
-	}
-
-	if err := app.prepareFunctionCodeForDeploy(ctx, opt, fn); err != nil {
-		return fmt.Errorf("failed to prepare function code for deploy: %w", err)
 	}
 
 	log.Println("[info] updating function configuration", opt.label())
@@ -160,6 +160,7 @@ func (app *App) Deploy(ctx context.Context, opt *DeployOption) error {
 		ImageConfig:       fn.ImageConfig,
 		SnapStart:         fn.SnapStart,
 	}
+	log.Printf("[debug] %s", jsonStr(confIn))
 
 	var newerVersion string
 	if !opt.DryRun {

@@ -65,7 +65,7 @@ func (app *App) prepareFunctionCodeForDeploy(ctx context.Context, opt *DeployOpt
 			log.Printf("[info] uploading function %d bytes to s3://%s/%s", info.Size(), *bucket, *key)
 			versionID, err := app.uploadFunctionToS3(ctx, zipfile, *bucket, *key)
 			if err != nil {
-				fmt.Errorf("failed to upload function zip to s3://%s/%s: %w", *bucket, *key, err)
+				return fmt.Errorf("failed to upload function zip to s3://%s/%s: %w", *bucket, *key, err)
 			}
 			if versionID != "" {
 				log.Printf("[info] object created as version %s", versionID)

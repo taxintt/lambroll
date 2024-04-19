@@ -37,6 +37,14 @@ func toGeneralMap(s any, omitEmpty bool) (any, error) {
 	return x, nil
 }
 
+func jsonStr(s any) string {
+	b, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		log.Printf("[warn] failed to marshal json: %s", err)
+	}
+	return string(b)
+}
+
 func marshalJSON(s interface{}) ([]byte, error) {
 	x, err := toGeneralMap(s, true)
 	if err != nil {
