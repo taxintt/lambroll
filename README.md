@@ -578,8 +578,8 @@ When you want to deploy a private (requires AWS IAM authentication) function URL
 ```json
 {
   "Config": {
-   "AuthType": "AWS_IAM",
-   "Cors": {
+    "AuthType": "AWS_IAM",
+    "Cors": {
       "AllowOrigins": [
         "*"
       ],
@@ -609,6 +609,32 @@ When you want to deploy a private (requires AWS IAM authentication) function URL
   - When `AuthType` is `AWS_IAM`, you must define `Permissions` to specify allowed principals.
   - Each elements of `Permissions` maps to [AddPermissionInput](https://pkg.go.dev/github.com/aws/aws-sdk-go-v2/service/lambda#AddPermissionInput) in AWS SDK Go v2.
 - `function_url.jsonnet` is also supported like `function.jsonnet`.
+
+#### CloudFront origin access control (OAC) support
+
+CloudFront provides origin access control (OAC) for restricting access to a Lambda function URL origin.
+
+When you want to restrict access to a Lambda function URL origin by CloudFront, you can specify `Principal` as `cloudfront.amazonaws.com` and `SourceArn` as the ARN of the CloudFront distribution.
+
+See also [Restricting access to an AWS Lambda function URL origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-lambda.html).
+
+```json
+{
+  "Config": {
+    "AuthType": "AWS_IAM",
+  },
+  "Permissions": [
+    {
+      "Principal": "cloudfront.amazonaws.com",
+      "SourceArn": "arn:aws:cloudfront::123456789012:distribution/EXXXXXXXX"
+    }
+  ]
+}
+```
+
+If you need to allow access from any CloudFront distributions in your account, you can specify `SourceArn` as `arn:aws:cloudfront::123456789012:distribution/*`.
+
+Specifying `SourceArn` as `*` is not recommended because it allows access from any CloudFront distribution in any AWS account.
 
 ## LICENSE
 
