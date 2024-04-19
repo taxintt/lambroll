@@ -616,11 +616,13 @@ See also [Restricting access to an AWS Lambda function URL origin](https://docs.
   "Permissions": [
     {
       "Principal": "cloudfront.amazonaws.com",
-      "SourceArn": "arn:aws:cloudfront::123456789012:distribution/XXXXXXXXX"
+      "SourceArn": "arn:aws:cloudfront::123456789012:distribution/EXXXXXXXX"
     }
   ]
 }
 ```
+
+If you need to allow access from any CloudFront distributions in your account, you can specify `SourceArn` as `arn:aws:cloudfront::123456789012:distribution/*`.
 
 ## LICENSE
 
