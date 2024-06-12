@@ -118,6 +118,20 @@ func matchExcludes(path string, excludes []string) bool {
 }
 
 func addToZip(z *zip.Writer, path, relpath string, info os.FileInfo) error {
+	// treat symlink as file
+	if info.Mode()&os.ModeSymlink != 0 {
+		linkTarget, err := os.Readlink(path)
+		if err != nil {
+			log.Printf("[error] failed to read symlink %s: %s", path, err)
+			return err
+		}
+		info, err = os.Stat(linkTarget)
+		if err != nil {
+			log.Printf("[error] failed to stat symlink target %s: %s", linkTarget, err)
+			return err
+		}
+		path = linkTarget
+	}
 	header, err := zip.FileInfoHeader(info)
 	if err != nil {
 		log.Println("[error] failed to create zip file header", err)
