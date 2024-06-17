@@ -331,10 +331,28 @@ func fillDefaultValues(fn *Function) {
 	if fn.MemorySize == nil {
 		fn.MemorySize = aws.Int32(128)
 	}
-	if fn.LoggingConfig == nil {
+	if fn.Layers == nil {
+		fn.Layers = []string{}
+	}
+	if lc := fn.LoggingConfig; lc == nil {
 		fn.LoggingConfig = &types.LoggingConfig{
-			LogFormat: types.LogFormatText,
-			LogGroup:  aws.String(resolveLogGroup(fn)),
+			LogFormat:           types.LogFormatText,
+			LogGroup:            aws.String(resolveLogGroup(fn)),
+			ApplicationLogLevel: types.ApplicationLogLevelInfo,
+			SystemLogLevel:      types.SystemLogLevelInfo,
+		}
+	} else {
+		if lc.LogFormat == "" {
+			lc.LogFormat = types.LogFormatText
+		}
+		if lc.LogGroup == nil {
+			lc.LogGroup = aws.String(resolveLogGroup(fn))
+		}
+		if lc.ApplicationLogLevel == "" {
+			lc.ApplicationLogLevel = types.ApplicationLogLevelInfo
+		}
+		if lc.SystemLogLevel == "" {
+			lc.SystemLogLevel = types.SystemLogLevelInfo
 		}
 	}
 	if fn.TracingConfig == nil {
