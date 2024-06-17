@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/Songmu/prompter"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/google/go-jsonnet/formatter"
 )
 
@@ -113,7 +114,7 @@ func resolveLogGroup(fn *Function) string {
 	if fn.LoggingConfig != nil && fn.LoggingConfig.LogGroup != nil {
 		return *fn.LoggingConfig.LogGroup
 	}
-	return fmt.Sprintf("/aws/lambda/%s", *fn.FunctionName)
+	return fmt.Sprintf("/aws/lambda/%s", aws.ToString(fn.FunctionName))
 }
 
 func fullQualifiedFunctionName(name string, qualifier *string) string {

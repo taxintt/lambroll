@@ -5,6 +5,7 @@ var (
 	ExpandExcludeFile = expandExcludeFile
 	LoadZipArchive    = loadZipArchive
 	MergeTags         = mergeTags
+	FillDefaultValues = fillDefaultValues
 )
 
 type VersionsOutput = versionsOutput
