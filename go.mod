@@ -27,7 +27,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/samber/lo v1.38.1
 	github.com/shogo82148/go-retry v1.1.1
-	golang.org/x/sys v0.18.0
+	golang.org/x/sys v0.20.0
 )
 
 require (
@@ -71,7 +71,7 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.0.5 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
-	github.com/hashicorp/go-retryablehttp v0.7.1 // indirect
+	github.com/hashicorp/go-retryablehttp v0.7.7 // indirect
 	github.com/hashicorp/go-slug v0.8.1 // indirect
 	github.com/hashicorp/go-tfe v1.2.0 // indirect
 	github.com/hashicorp/jsonapi v0.0.0-20210826224640-ee7dae0fb22d // indirect
