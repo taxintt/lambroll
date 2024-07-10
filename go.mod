@@ -25,7 +25,7 @@ require (
 	github.com/kylelemons/godebug v1.1.0
 	github.com/mattn/go-isatty v0.0.20
 	github.com/olekukonko/tablewriter v0.0.5
-	github.com/samber/lo v1.38.1
+	github.com/samber/lo v1.44.0
 	github.com/shogo82148/go-retry v1.1.1
 	golang.org/x/sys v0.22.0
 )
@@ -89,7 +89,6 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/crypto v0.24.0 // indirect
-	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/oauth2 v0.7.0 // indirect
 	golang.org/x/term v0.21.0 // indirect
