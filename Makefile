@@ -17,10 +17,10 @@ clean:
 	rm -fr dist/
 
 packages:
-	goreleaser build --skip-validate --rm-dist
+	goreleaser build --skip-validate --clean
 
 packages-snapshot:
-	goreleaser build --skip-validate --rm-dist --snapshot
+	goreleaser build --skip-validate --clean --snapshot
 
 orb/publish:
 	circleci orb validate circleci-orb.yml
