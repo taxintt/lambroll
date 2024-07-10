@@ -26,10 +26,8 @@ var testCasesFillDefaultValues = []struct {
 			},
 			Layers: []string{},
 			LoggingConfig: &types.LoggingConfig{
-				ApplicationLogLevel: "INFO",
-				LogFormat:           types.LogFormatText,
-				LogGroup:            aws.String("/aws/lambda/test"),
-				SystemLogLevel:      "INFO",
+				LogFormat: types.LogFormatText,
+				LogGroup:  aws.String("/aws/lambda/test"),
 			},
 			MemorySize: aws.Int32(128),
 			SnapStart: &types.SnapStart{
