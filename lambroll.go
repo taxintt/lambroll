@@ -336,10 +336,8 @@ func fillDefaultValues(fn *Function) {
 	}
 	if lc := fn.LoggingConfig; lc == nil {
 		fn.LoggingConfig = &types.LoggingConfig{
-			LogFormat:           types.LogFormatText,
-			LogGroup:            aws.String(resolveLogGroup(fn)),
-			ApplicationLogLevel: types.ApplicationLogLevelInfo,
-			SystemLogLevel:      types.SystemLogLevelInfo,
+			LogFormat: types.LogFormatText,
+			LogGroup:  aws.String(resolveLogGroup(fn)),
 		}
 	} else {
 		if lc.LogFormat == "" {
@@ -348,10 +346,10 @@ func fillDefaultValues(fn *Function) {
 		if lc.LogGroup == nil {
 			lc.LogGroup = aws.String(resolveLogGroup(fn))
 		}
-		if lc.ApplicationLogLevel == "" {
+		if lc.ApplicationLogLevel == "" && lc.LogFormat == types.LogFormatJson {
 			lc.ApplicationLogLevel = types.ApplicationLogLevelInfo
 		}
-		if lc.SystemLogLevel == "" {
+		if lc.SystemLogLevel == "" && lc.LogFormat == types.LogFormatJson {
 			lc.SystemLogLevel = types.SystemLogLevelInfo
 		}
 	}
