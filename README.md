@@ -81,7 +81,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: fujiwara/lambroll@v1
         with:
-          version: v1.0.1
+          version: v1.0.4
+          os: linux   # linux or darwin (default: linux)
+          arch: amd64 # amd64 or arm64 (default: amd64)
       - run: |
           lambroll deploy
 ```
