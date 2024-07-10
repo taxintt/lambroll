@@ -2,12 +2,18 @@ inputs:
   version:
     description: "A version to install lamroll"
     default: "v1.0.1"
+  os:
+    description: "operating system. possible values: linux, darwin"
+    default: "linux"
+  arch:
+    description: "architecture. possible values: amd64, arm64"
+    default: "amd64"
 runs:
   using: "composite"
   steps:
     - run: |
         mkdir -p /tmp/lambroll-${{ inputs.version }}
         cd /tmp/lambroll-${{ inputs.version }}
-        curl -sL https://github.com/fujiwara/lambroll/releases/download/${{ inputs.version }}/lambroll_${{ inputs.version}}_linux_amd64.tar.gz | tar zxvf -
+        curl -sL https://github.com/fujiwara/lambroll/releases/download/${{ inputs.version }}/lambroll_${{ inputs.version }}_${{ inputs.os }}_${{ inputs.arch }}.tar.gz | tar zxvf -
         sudo install lambroll /usr/local/bin
       shell: bash
