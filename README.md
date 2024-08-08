@@ -241,6 +241,24 @@ Flags:
 - Create / Update Lambda function
 - Create an alias to the published version when `--publish` (default).
 
+
+#### Deploy via S3
+
+When the zip archive is too large to upload directly, you can deploy via S3.
+
+Set `Code.S3Bucket` and `Code.S3Key` in function.json. lambroll uploads the zip archive to the specified S3 bucket and deploys the function.
+
+```json
+{
+  "Code": {
+    "S3Bucket": "my-bucket",
+    "S3Key": "function.zip"
+  }
+}
+```
+
+If you want to upload the zip archive yourself, you can skip creating the zip archive by using the `--skip-archive` flag.
+
 #### Deploy container image
 
 lambroll also support to deploy a container image for Lambda.
