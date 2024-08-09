@@ -8,17 +8,17 @@ runs:
     - name: Set file name
       id: set-filename
       run: |
-        BIN_OS=$(case "${{ runner.os }}" in
-          Linux) echo "linux" ;;
-          macOS) echo "darwin" ;;
-          *) echo "linux" ;;
-        esac)
+        case "${{ runner.os }}" in
+          Linux) BIN_OS="linux" ;;
+          macOS) BIN_OS="darwin" ;;
+          *) BIN_OS="linux" ;;
+        esac
 
-        BIN_ARCH=$(case "${{ runner.arch }}" in
-          X64) echo "amd64" ;;
-          ARM64) echo "arm64" ;;
-          *) echo "amd64" ;;
-        esac)
+        case "${{ runner.arch }}" in
+          X64) BIN_ARCH="amd64" ;;
+          ARM64) BIN_ARCH="arm64" ;;
+          *) BIN_ARCH="amd64" ;;
+        esac
 
         FILENAME=lambroll_${{ inputs.version }}_${BIN_OS}_${BIN_ARCH}.tar.gz
         echo "FILENAME=$FILENAME" >> $GITHUB_OUTPUT
