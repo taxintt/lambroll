@@ -71,7 +71,7 @@ jobs:
 
 ### GitHub Actions
 
-Action fujiwara/lambroll@v0 installs lambroll binary for Linux into /usr/local/bin. This action runs install only.
+Action fujiwara/lambroll@v1 installs lambroll binary for Linux into /usr/local/bin. This action runs install only.
 
 ```yml
 jobs:
@@ -82,11 +82,14 @@ jobs:
       - uses: fujiwara/lambroll@v1
         with:
           version: v1.0.4
-          os: linux   # linux or darwin (default: linux)
-          arch: amd64 # amd64 or arm64 (default: amd64)
       - run: |
           lambroll deploy
 ```
+
+Note:
+- `version` is not required, but it is recommended that the version be specified.
+  - The default version is not fixed and may change in the future.
+- `os` and `arch` are automatically detected. (Some previous versions use `os` and `arch` as inputs, but they are deprecated.)
 
 ## Quick start
 
