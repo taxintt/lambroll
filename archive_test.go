@@ -42,7 +42,7 @@ func testCreateZipArchive(t *testing.T, s zipTestSuite) {
 	excludes = append(excludes, []string{"*.bin", "skip/*"}...)
 	r, info, err := lambroll.CreateZipArchive(s.SrcDir, excludes)
 	if err != nil {
-		t.Error("faile to CreateZipArchive", err)
+		t.Error("failed to CreateZipArchive", err)
 	}
 	defer r.Close()
 	defer os.Remove(r.Name())
@@ -51,8 +51,8 @@ func testCreateZipArchive(t *testing.T, s zipTestSuite) {
 	if err != nil {
 		t.Error("failed to new zip reader", err)
 	}
-	if len(zr.File) != 4 {
-		t.Errorf("unexpected included files num %d expect %d", len(zr.File), 3)
+	if len(zr.File) != 6 {
+		t.Errorf("unexpected included files num %d expect %d", len(zr.File), 6)
 	}
 	for _, f := range zr.File {
 		h := f.FileHeader
