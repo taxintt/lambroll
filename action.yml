@@ -2,18 +2,30 @@ inputs:
   version:
     description: "A version to install lamroll"
     default: "v1.0.1"
-  os:
-    description: "operating system. possible values: linux, darwin"
-    default: "linux"
-  arch:
-    description: "architecture. possible values: amd64, arm64"
-    default: "amd64"
 runs:
   using: "composite"
   steps:
+    - name: Set file name
+      id: set-filename
+      run: |
+        BIN_OS=$(case "${{ runner.os }}" in
+          Linux) echo "linux" ;;
+          macOS) echo "darwin" ;;
+          *) echo "linux" ;;
+        esac)
+
+        BIN_ARCH=$(case "${{ runner.arch }}" in
+          X64) echo "amd64" ;;
+          ARM64) echo "arm64" ;;
+          *) echo "amd64" ;;
+        esac)
+
+        FILENAME=lambroll_${{ inputs.version }}_${BIN_OS}_${BIN_ARCH}.tar.gz
+        echo "FILENAME=$FILENAME" >> $GITHUB_OUTPUT
+      shell: bash
     - run: |
         mkdir -p /tmp/lambroll-${{ inputs.version }}
         cd /tmp/lambroll-${{ inputs.version }}
-        curl -sL https://github.com/fujiwara/lambroll/releases/download/${{ inputs.version }}/lambroll_${{ inputs.version }}_${{ inputs.os }}_${{ inputs.arch }}.tar.gz | tar zxvf -
+        curl -sL https://github.com/fujiwara/lambroll/releases/download/${{ inputs.version }}/${{ steps.set-filename.outputs.FILENAME }} | tar zxvf -
         sudo install lambroll /usr/local/bin
       shell: bash
