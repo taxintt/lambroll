@@ -16,8 +16,12 @@ jobs:
     name: test action
     runs-on: ${{ matrix.env.runner }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: fujiwara/lambroll@${{ github.ref_name }}
+      - uses: fujiwara/lambroll@v1-actions-test
+        with:
+          version: v1.0.4
+      - run: |
+          lambroll version 2>&1 | fgrep v1.0.4
+      - uses: fujiwara/lambroll@v1
         with:
           version: v1.0.5
       - run: |
