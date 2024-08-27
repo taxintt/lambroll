@@ -225,6 +225,9 @@ func loadDefinitionFile[T any](app *App, path string, defaults []string) (*T, er
 	switch filepath.Ext(path) {
 	case ".jsonnet":
 		vm := jsonnet.MakeVM()
+		for _, f := range DefaultJsonnetNativeFuncs() {
+			vm.NativeFunction(f)
+		}
 		for k, v := range app.extStr {
 			vm.ExtVar(k, v)
 		}
