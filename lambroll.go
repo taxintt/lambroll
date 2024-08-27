@@ -95,8 +95,9 @@ type App struct {
 	awsConfig aws.Config
 	lambda    *lambda.Client
 
-	extStr  map[string]string
-	extCode map[string]string
+	extStr      map[string]string
+	extCode     map[string]string
+	nativeFuncs []*jsonnet.NativeFunction
 
 	functionFilePath string
 }
@@ -148,6 +149,7 @@ func New(ctx context.Context, opt *Option) (*App, error) {
 	}
 
 	loader := config.New()
+	nativeFuncs := DefaultJsonnetNativeFuncs()
 
 	// load ssm functions
 	if ssmFuncs, err := ssm.FuncMap(ctx, v2cfg); err != nil {
@@ -155,14 +157,20 @@ func New(ctx context.Context, opt *Option) (*App, error) {
 	} else {
 		loader.Funcs(ssmFuncs)
 	}
+	if ssmNativeFuncs, err := ssm.JsonnetNativeFuncs(ctx, v2cfg); err != nil {
+		return nil, err
+	} else {
+		nativeFuncs = append(nativeFuncs, ssmNativeFuncs...)
+	}
 
 	// load tfstate functions
 	if opt.TFState != nil && *opt.TFState != "" {
-		funcs, err := tfstate.FuncMap(ctx, *opt.TFState)
+		lookup, err := tfstate.ReadURL(ctx, *opt.TFState)
 		if err != nil {
 			return nil, err
 		}
-		loader.Funcs(funcs)
+		loader.Funcs(lookup.FuncMap(ctx))
+		nativeFuncs = append(nativeFuncs, lookup.JsonnetNativeFuncs(ctx)...)
 	}
 	if len(opt.PrefixedTFState) > 0 {
 		prefixedFuncs := make(template.FuncMap)
@@ -170,13 +178,14 @@ func New(ctx context.Context, opt *Option) (*App, error) {
 			if prefix == "" {
 				return nil, fmt.Errorf("--prefixed-tfstate option cannot have empty key")
 			}
-			funcs, err := tfstate.FuncMap(ctx, path)
+			loader, err := tfstate.ReadURL(ctx, path)
 			if err != nil {
 				return nil, err
 			}
-			for name, f := range funcs {
+			for name, f := range loader.FuncMap(ctx) {
 				prefixedFuncs[prefix+name] = f
 			}
+			nativeFuncs = append(nativeFuncs, loader.JsonnetNativeFuncsWithPrefix(ctx, prefix)...)
 		}
 		loader.Funcs(prefixedFuncs)
 	}
@@ -187,9 +196,10 @@ func New(ctx context.Context, opt *Option) (*App, error) {
 		awsConfig:        v2cfg,
 		lambda:           lambda.NewFromConfig(v2cfg),
 		functionFilePath: opt.Function,
+		nativeFuncs:      nativeFuncs,
+		extStr:           opt.ExtStr,
+		extCode:          opt.ExtCode,
 	}
-	app.extStr = opt.ExtStr
-	app.extCode = opt.ExtCode
 
 	return app, nil
 }
@@ -225,7 +235,7 @@ func loadDefinitionFile[T any](app *App, path string, defaults []string) (*T, er
 	switch filepath.Ext(path) {
 	case ".jsonnet":
 		vm := jsonnet.MakeVM()
-		for _, f := range DefaultJsonnetNativeFuncs() {
+		for _, f := range app.nativeFuncs {
 			vm.NativeFunction(f)
 		}
 		for k, v := range app.extStr {
