@@ -1,6 +1,7 @@
 local prefix1_tfstate = std.native('prefix1_tfstate');
 local tfstate = std.native('tfstate');
 local must_env = std.native('must_env');
+local caller = std.native('caller_identity')();
 {
   Architectures: [
     'x86_64',
@@ -19,7 +20,7 @@ local must_env = std.native('must_env');
   FunctionName: must_env('FUNCTION_NAME'),
   FileSystemConfigs: [
     {
-      Arn: 'arn:aws:elasticfilesystem:ap-northeast-1:123456789012:access-point/fsap-04fc0858274e7dd9a',
+      Arn: 'arn:aws:elasticfilesystem:ap-northeast-1:%s:access-point/fsap-04fc0858274e7dd9a' % caller.Account,
       LocalMountPath: '/mnt/lambda',
     },
   ],
@@ -32,7 +33,7 @@ local must_env = std.native('must_env');
   },
   MemorySize: std.extVar('MemorySize'),
   Role: tfstate('data.aws_iam_role.lambda.arn'),
-  Runtime: 'nodejs12.x',
+  Runtime: 'nodejs16.x',
   Timeout: 5,
   TracingConfig: {
     Mode: 'PassThrough',
