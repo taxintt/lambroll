@@ -420,7 +420,7 @@ When "Tags" key exists in function.json, lambroll set / remove tags to the lambd
 When "Tags" key does not exist, lambroll doesn't manage tags.
 If you hope to remove all tags, set `"Tags": {}` expressly.
 
-### Jsonnet support for function configuration
+#### Jsonnet support for function configuration
 
 lambroll also can read function.jsonnet as [Jsonnet](https://jsonnet.org/) format instead of plain JSON.
 
@@ -516,6 +516,25 @@ local must_env = std.native('must_env');
   },
 }
 ```
+
+#### Resolve AWS caller identity
+
+Note: This function is available only in Jsonnet.
+
+The `caller_identity` native function resolves the AWS caller identity.
+
+```jsonnet
+local caller = std.native('caller_identity')();
+{
+  Account: caller.Account,
+  Arn: caller.Arn,
+  UserId: caller.UserId,
+}
+```
+
+The `caller_identity` function returns an object containing the following fields: `Account`, `Arn`, and `UserId`.
+
+This object is the same as the result of [GetCallerIdentity](https://docs.aws.amazon.com/STS/latest/APIReference/API_GetCallerIdentity.html) API.
 
 #### Environment variables from envfile
 
