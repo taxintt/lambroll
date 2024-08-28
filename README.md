@@ -530,9 +530,17 @@ local must_env = std.native('must_env');
 
 #### Resolve AWS caller identity
 
-Note: This function is available only in Jsonnet.
+The `caller_identity` template function resolves the AWS caller identity.
 
-The `caller_identity` native function resolves the AWS caller identity.
+```json
+{
+  "Account": "{{ caller_identity.Account }}",
+  "Arn": "{{ caller_identity.Arn }}",
+  "UserId": "{{ caller_identity.UserId }}"
+}
+```
+
+The `caller_identity` native function also available in Jsonnet.
 
 ```jsonnet
 local caller = std.native('caller_identity')();

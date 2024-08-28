@@ -130,6 +130,17 @@ func (c *CallerIdentity) JsonnetNativeFuncs(ctx context.Context) []*jsonnet.Nati
 	}
 }
 
+func (c *CallerIdentity) FuncMap(ctx context.Context) template.FuncMap {
+	return template.FuncMap{
+		"caller_identity": func() map[string]any {
+			if err := c.resolve(ctx); err != nil {
+				return nil
+			}
+			return c.data
+		},
+	}
+}
+
 // App represents lambroll application
 type App struct {
 	callerIdentity *CallerIdentity
@@ -250,6 +261,7 @@ func New(ctx context.Context, opt *Option) (*App, error) {
 		},
 	}
 	app.nativeFuncs = append(app.nativeFuncs, app.callerIdentity.JsonnetNativeFuncs(ctx)...)
+	app.loader.Funcs(app.callerIdentity.FuncMap(ctx))
 	return app, nil
 }
 
