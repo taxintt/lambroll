@@ -420,6 +420,17 @@ When "Tags" key exists in function.json, lambroll set / remove tags to the lambd
 When "Tags" key does not exist, lambroll doesn't manage tags.
 If you hope to remove all tags, set `"Tags": {}` expressly.
 
+#### Environment variables from envfile
+
+`lambroll --envfile .env1 .env2` reads files named .env1 and .env2 as environment files and export variables in these files.
+
+These files are parsed by [hashicorp/go-envparse](https://github.com/hashicorp/go-envparse).
+
+```env
+FOO=foo
+export BAR="bar"
+```
+
 #### Jsonnet support for function configuration
 
 lambroll also can read function.jsonnet as [Jsonnet](https://jsonnet.org/) format instead of plain JSON.
@@ -535,17 +546,6 @@ local caller = std.native('caller_identity')();
 The `caller_identity` function returns an object containing the following fields: `Account`, `Arn`, and `UserId`.
 
 This object is the same as the result of [GetCallerIdentity](https://docs.aws.amazon.com/STS/latest/APIReference/API_GetCallerIdentity.html) API.
-
-#### Environment variables from envfile
-
-`lambroll --envfile .env1 .env2` reads files named .env1 and .env2 as environment files and export variables in these files.
-
-These files are parsed by [hashicorp/go-envparse](https://github.com/hashicorp/go-envparse).
-
-```env
-FOO=foo
-export BAR="bar"
-```
 
 #### Lookup resource attributes in tfstate ([Terraform state](https://www.terraform.io/docs/state/index.html))
 
