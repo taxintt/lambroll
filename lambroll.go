@@ -18,7 +18,6 @@ import (
 	"github.com/fujiwara/ssm-lookup/ssm"
 	"github.com/fujiwara/tfstate-lookup/tfstate"
 	"github.com/google/go-jsonnet"
-	"github.com/google/go-jsonnet/ast"
 	"github.com/hashicorp/go-envparse"
 	"github.com/kayac/go-config"
 	"github.com/shogo82148/go-retry"
@@ -86,60 +85,6 @@ var (
 	// CurrentAliasName is alias name for current deployed function
 	CurrentAliasName = "current"
 )
-
-type CallerIdentity struct {
-	data     map[string]any
-	Resolver func(ctx context.Context) (*sts.GetCallerIdentityOutput, error)
-}
-
-func (c *CallerIdentity) resolve(ctx context.Context) error {
-	if c.data != nil {
-		return nil
-	}
-	res, err := c.Resolver(ctx)
-	if err != nil {
-		return err
-	}
-	c.data = map[string]any{
-		"Account": *res.Account,
-		"Arn":     *res.Arn,
-		"UserId":  *res.UserId,
-	}
-	return nil
-}
-
-func (c *CallerIdentity) Account(ctx context.Context) string {
-	if err := c.resolve(ctx); err != nil {
-		return ""
-	}
-	return c.data["Account"].(string)
-}
-
-func (c *CallerIdentity) JsonnetNativeFuncs(ctx context.Context) []*jsonnet.NativeFunction {
-	return []*jsonnet.NativeFunction{
-		{
-			Name:   "caller_identity",
-			Params: []ast.Identifier{},
-			Func: func(params []any) (any, error) {
-				if err := c.resolve(ctx); err != nil {
-					return nil, err
-				}
-				return c.data, nil
-			},
-		},
-	}
-}
-
-func (c *CallerIdentity) FuncMap(ctx context.Context) template.FuncMap {
-	return template.FuncMap{
-		"caller_identity": func() map[string]any {
-			if err := c.resolve(ctx); err != nil {
-				return nil
-			}
-			return c.data
-		},
-	}
-}
 
 // App represents lambroll application
 type App struct {
@@ -245,7 +190,12 @@ func New(ctx context.Context, opt *Option) (*App, error) {
 		loader.Funcs(prefixedFuncs)
 	}
 
+	callerIdentity := newCallerIdentity(v2cfg)
+	nativeFuncs = append(nativeFuncs, callerIdentity.JsonnetNativeFuncs(ctx)...)
+	loader.Funcs(callerIdentity.FuncMap(ctx))
+
 	app := &App{
+		callerIdentity:   callerIdentity,
 		profile:          profile,
 		loader:           loader,
 		awsConfig:        v2cfg,
@@ -254,14 +204,7 @@ func New(ctx context.Context, opt *Option) (*App, error) {
 		nativeFuncs:      nativeFuncs,
 		extStr:           opt.ExtStr,
 		extCode:          opt.ExtCode,
-		callerIdentity: &CallerIdentity{
-			Resolver: func(ctx context.Context) (*sts.GetCallerIdentityOutput, error) {
-				return sts.NewFromConfig(v2cfg).GetCallerIdentity(ctx, &sts.GetCallerIdentityInput{})
-			},
-		},
 	}
-	app.nativeFuncs = append(app.nativeFuncs, app.callerIdentity.JsonnetNativeFuncs(ctx)...)
-	app.loader.Funcs(app.callerIdentity.FuncMap(ctx))
 	return app, nil
 }
 

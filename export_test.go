@@ -9,6 +9,7 @@ var (
 	JSONStr           = jsonStr
 	MarshalJSON       = marshalJSON
 	NewFunctionFrom   = newFunctionFrom
+	NewCallerIdentity = newCallerIdentity
 )
 
 type VersionsOutput = versionsOutput
