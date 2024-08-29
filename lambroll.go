@@ -88,15 +88,16 @@ var (
 
 // App represents lambroll application
 type App struct {
-	accountID string
-	profile   string
-	loader    *config.Loader
+	callerIdentity *CallerIdentity
+	profile        string
+	loader         *config.Loader
 
 	awsConfig aws.Config
 	lambda    *lambda.Client
 
-	extStr  map[string]string
-	extCode map[string]string
+	extStr      map[string]string
+	extCode     map[string]string
+	nativeFuncs []*jsonnet.NativeFunction
 
 	functionFilePath string
 }
@@ -148,6 +149,7 @@ func New(ctx context.Context, opt *Option) (*App, error) {
 	}
 
 	loader := config.New()
+	nativeFuncs := DefaultJsonnetNativeFuncs()
 
 	// load ssm functions
 	if ssmFuncs, err := ssm.FuncMap(ctx, v2cfg); err != nil {
@@ -155,14 +157,20 @@ func New(ctx context.Context, opt *Option) (*App, error) {
 	} else {
 		loader.Funcs(ssmFuncs)
 	}
+	if ssmNativeFuncs, err := ssm.JsonnetNativeFuncs(ctx, v2cfg); err != nil {
+		return nil, err
+	} else {
+		nativeFuncs = append(nativeFuncs, ssmNativeFuncs...)
+	}
 
 	// load tfstate functions
 	if opt.TFState != nil && *opt.TFState != "" {
-		funcs, err := tfstate.FuncMap(ctx, *opt.TFState)
+		lookup, err := tfstate.ReadURL(ctx, *opt.TFState)
 		if err != nil {
 			return nil, err
 		}
-		loader.Funcs(funcs)
+		loader.Funcs(lookup.FuncMap(ctx))
+		nativeFuncs = append(nativeFuncs, lookup.JsonnetNativeFuncs(ctx)...)
 	}
 	if len(opt.PrefixedTFState) > 0 {
 		prefixedFuncs := make(template.FuncMap)
@@ -170,43 +178,39 @@ func New(ctx context.Context, opt *Option) (*App, error) {
 			if prefix == "" {
 				return nil, fmt.Errorf("--prefixed-tfstate option cannot have empty key")
 			}
-			funcs, err := tfstate.FuncMap(ctx, path)
+			loader, err := tfstate.ReadURL(ctx, path)
 			if err != nil {
 				return nil, err
 			}
-			for name, f := range funcs {
+			for name, f := range loader.FuncMap(ctx) {
 				prefixedFuncs[prefix+name] = f
 			}
+			nativeFuncs = append(nativeFuncs, loader.JsonnetNativeFuncsWithPrefix(ctx, prefix)...)
 		}
 		loader.Funcs(prefixedFuncs)
 	}
 
+	callerIdentity := newCallerIdentity(v2cfg)
+	nativeFuncs = append(nativeFuncs, callerIdentity.JsonnetNativeFuncs(ctx)...)
+	loader.Funcs(callerIdentity.FuncMap(ctx))
+
 	app := &App{
+		callerIdentity:   callerIdentity,
 		profile:          profile,
 		loader:           loader,
 		awsConfig:        v2cfg,
 		lambda:           lambda.NewFromConfig(v2cfg),
 		functionFilePath: opt.Function,
+		nativeFuncs:      nativeFuncs,
+		extStr:           opt.ExtStr,
+		extCode:          opt.ExtCode,
 	}
-	app.extStr = opt.ExtStr
-	app.extCode = opt.ExtCode
-
 	return app, nil
 }
 
 // AWSAccountID returns AWS account ID in current session
 func (app *App) AWSAccountID(ctx context.Context) string {
-	if app.accountID != "" {
-		return app.accountID
-	}
-	svc := sts.NewFromConfig(app.awsConfig)
-	r, err := svc.GetCallerIdentity(ctx, &sts.GetCallerIdentityInput{})
-	if err != nil {
-		log.Println("[warn] failed to get caller identity.", err)
-		return ""
-	}
-	app.accountID = *r.Account
-	return app.accountID
+	return app.callerIdentity.Account(ctx)
 }
 
 func loadDefinitionFile[T any](app *App, path string, defaults []string) (*T, error) {
@@ -225,6 +229,9 @@ func loadDefinitionFile[T any](app *App, path string, defaults []string) (*T, er
 	switch filepath.Ext(path) {
 	case ".jsonnet":
 		vm := jsonnet.MakeVM()
+		for _, f := range app.nativeFuncs {
+			vm.NativeFunction(f)
+		}
 		for k, v := range app.extStr {
 			vm.ExtVar(k, v)
 		}

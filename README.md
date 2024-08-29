@@ -63,7 +63,7 @@ jobs:
     steps:
       - checkout
       - lambroll/install:
-          version: v1.0.1
+          version: v1.1.0
       - run:
           command: |
             lambroll deploy
@@ -398,6 +398,11 @@ function.json is a definition for Lambda function. JSON structure is based from 
   }
 }
 ```
+
+The template functions is available in `{{ }}`.
+- `env` function expands environment variables.
+- `must_env` function expands environment variables. If the environment variable is not defined, lambroll will panic and abort.
+
 #### Tags
 
 When "Tags" key exists in function.json, lambroll set / remove tags to the lambda function at deploy.
@@ -415,6 +420,44 @@ When "Tags" key exists in function.json, lambroll set / remove tags to the lambd
 When "Tags" key does not exist, lambroll doesn't manage tags.
 If you hope to remove all tags, set `"Tags": {}` expressly.
 
+#### Environment variables from envfile
+
+`lambroll --envfile .env1 .env2` reads files named .env1 and .env2 as environment files and export variables in these files.
+
+These files are parsed by [hashicorp/go-envparse](https://github.com/hashicorp/go-envparse).
+
+```env
+FOO=foo
+export BAR="bar"
+```
+
+#### Jsonnet support for function configuration
+
+lambroll also can read function.jsonnet as [Jsonnet](https://jsonnet.org/) format instead of plain JSON.
+
+```jsonnet
+{
+  FunctionName: 'hello',
+  Handler: 'index.handler',
+  MemorySize: std.extVar('memorySize'),
+  Role: 'arn:aws:iam::%s:role/lambda_role' % [ std.extVar('accountID') ],
+  Runtime: 'nodejs20.x',
+}
+```
+
+```console
+$ lambroll \
+    --function function.jsonnet \
+    --ext-str accountID=0123456789012 \
+    --ext-code memorySize="128 * 4" \
+    deploy
+```
+
+- `--ext-str` sets external string values for Jsonnet.
+- `--ext-code` sets external code values for Jsonnet.
+
+v1.1.0 and later, lambroll supports Jsonnet native functions. See below for details.
+
 #### Expand SSM parameter values
 
 At reading the file, lambroll evaluates `{{ ssm }}` syntax in JSON.
@@ -426,6 +469,19 @@ For example,
 ```
 
 SSM parameter value of `/path/to/param` is expanded here.
+
+For Jsonnet, the `ssm` function is available.
+
+```jsonnet
+local ssm = std.native('ssm');
+{
+  Environment: {
+    Variables: {
+      FOO: ssm('/path/to/param'),
+    },
+  },
+}
+```
 
 #### Expand environment variables
 
@@ -457,16 +513,47 @@ Environment variable `FOO` is expanded. When `FOO` is not defined, lambroll will
 }
 ```
 
-#### Environment variables from envfile
+For Jsonnet, the `env` and `must_env` native functions are available.
 
-`lambroll --envfile .env1 .env2` reads files named .env1 and .env2 as environment files and export variables in these files.
-
-These files are parsed by [hashicorp/go-envparse](https://github.com/hashicorp/go-envparse).
-
-```env
-FOO=foo
-export BAR="bar"
+```jsonnet
+local env = std.native('env');
+local must_env = std.native('must_env');
+{
+  Environment: {
+    Variables: {
+      FOO: env('FOO', 'default for FOO'),
+      BAR: must_env('BAR'),
+    },
+  },
+}
 ```
+
+#### Resolve AWS caller identity
+
+The `caller_identity` template function resolves the AWS caller identity.
+
+```json
+{
+  "Account": "{{ caller_identity.Account }}",
+  "Arn": "{{ caller_identity.Arn }}",
+  "UserId": "{{ caller_identity.UserId }}"
+}
+```
+
+The `caller_identity` native function also available in Jsonnet.
+
+```jsonnet
+local caller = std.native('caller_identity')();
+{
+  Account: caller.Account,
+  Arn: caller.Arn,
+  UserId: caller.UserId,
+}
+```
+
+The `caller_identity` function returns an object containing the following fields: `Account`, `Arn`, and `UserId`.
+
+This object is the same as the result of [GetCallerIdentity](https://docs.aws.amazon.com/STS/latest/APIReference/API_GetCallerIdentity.html) API.
 
 #### Lookup resource attributes in tfstate ([Terraform state](https://www.terraform.io/docs/state/index.html))
 
@@ -491,7 +578,7 @@ data "aws_iam_role" "lambda" {
   "Handler": "index.js",
   "MemorySize": 128,
   "Role": "{{ tfstate `data.aws_iam_role.lambda.arn` }}",
-  "Runtime": "nodejs12.x",
+  "Runtime": "nodejs20.x",
   "Timeout": 5,
   "TracingConfig": {
     "Mode": "PassThrough"
@@ -505,6 +592,33 @@ data "aws_iam_role" "lambda" {
       "{{ tfstatef `aws_security_group.internal['%s'].id` (must_env `WORLD`) }}"
     ]
   }
+}
+```
+
+For Jsonnet, the `tfstate` native function is available.
+
+```jsonnet
+local tfstate = std.native('tfstate');
+{
+  Description: 'hello function',
+  FunctionName: 'hello',
+  Handler: 'index.js',
+  MemorySize: 128,
+  Role: tfstate('data.aws_iam_role.lambda.arn'),
+  Runtime: 'nodejs20.x',
+  Timeout: 5,
+  TracingConfig: {
+    Mode: 'PassThrough',
+  },
+  VpcConfig: {
+    SubnetIds: [
+      tfstate('aws_subnet.lambda["az-a"].id'),
+      tfstate('aws_subnet.lambda["az-b"].id'),
+    ],
+    SecurityGroupIds: [
+      tfstate('aws_security_group.internal["%s"].id' % must_env('WORLD')),
+    ],
+  },
 }
 ```
 
@@ -530,26 +644,21 @@ which then exposes additional template functions available like:
 }
 ```
 
-### Jsonnet support for function configuration
-
-lambroll also can read function.jsonnet as [Jsonnet](https://jsonnet.org/) format instead of plain JSON.
+For Jsonnet, a `{prefix}_tfstate` native function is generated by the `--prefixed-tfstate` option.
 
 ```jsonnet
+local first_tfstate = std.native('my_first_tfstate');
+local second_tfstate = std.native('my_second_tfstate');
 {
-  FunctionName: 'hello',
-  Handler: 'index.handler',
-  MemorySize: std.extVar('memorySize'),
-  Role: 'arn:aws:iam::%s:role/lambda_role' % [ std.extVar('accountID') ],
-  Runtime: 'nodejs20.x',
+  Description: 'hello function',
+  Environment: {
+    Variables: {
+      FIRST_VALUE: first_tfstate('data.aws_iam_role.lambda.arn'),
+      SECOND_VALUE: second_tfstate('data.aws_iam_role.lambda.arn'),
+    },
+  },
+  "rest of the parameters": "...",
 }
-```
-
-```console
-$ lambroll \
-    --function function.jsonnet \
-    --ext-str accountID=0123456789012 \
-    --ext-code memorySize="128 * 4" \
-    deploy
 ```
 
 ### .lambdaignore

@@ -16,7 +16,7 @@
     "FunctionName": "{{ must_env `FUNCTION_NAME` }}",
     "FileSystemConfigs": [
         {
-            "Arn": "arn:aws:elasticfilesystem:ap-northeast-1:123456789012:access-point/fsap-04fc0858274e7dd9a",
+            "Arn": "arn:aws:elasticfilesystem:ap-northeast-1:{{ caller_identity.Account }}:access-point/fsap-04fc0858274e7dd9a",
             "LocalMountPath": "/mnt/lambda"
         }
     ],
