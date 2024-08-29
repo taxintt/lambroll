@@ -29,7 +29,7 @@ type DeployOption struct {
 	FunctionURL   string `help:"path to function-url definition" default:"" env:"LAMBROLL_FUNCTION_URL"`
 	SkipFunction  bool   `help:"skip to deploy a function. deploy function-url only" default:"false"`
 
-	ExcludeFileOption
+	ZipOption
 }
 
 func (opt DeployOption) label() string {

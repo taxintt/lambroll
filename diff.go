@@ -28,7 +28,7 @@ type DiffOption struct {
 	FunctionURL string  `help:"path to function-url definition" default:"" env:"LAMBROLL_FUNCTION_URL"`
 	Ignore      string  `help:"ignore diff by jq query" default:""`
 
-	ExcludeFileOption
+	ZipOption
 }
 
 // Diff prints diff of function.json compared with latest function
@@ -112,7 +112,7 @@ func (app *App) Diff(ctx context.Context, opt *DiffOption) error {
 		if packageType != types.PackageTypeZip {
 			return fmt.Errorf("code-sha256 is only supported for Zip package type")
 		}
-		zipfile, _, err := prepareZipfile(opt.Src, opt.excludes)
+		zipfile, _, err := prepareZipfile(opt.Src, opt.excludes, opt.KeepSymlink)
 		if err != nil {
 			return err
 		}
