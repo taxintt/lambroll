@@ -28,7 +28,7 @@ type DiffOption struct {
 	FunctionURL string  `help:"path to function-url definition" default:"" env:"LAMBROLL_FUNCTION_URL"`
 	Ignore      string  `help:"ignore diff by jq query" default:""`
 
-	ExcludeFileOption
+	ZipOption
 }
 
 // Diff prints diff of function.json compared with latest function

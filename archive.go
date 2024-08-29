@@ -21,7 +21,7 @@ type ArchiveOption struct {
 	Src  string `help:"function zip archive or src dir" default:"."`
 	Dest string `help:"destination file path" default:"function.zip"`
 
-	ExcludeFileOption
+	ZipOption
 }
 
 // Archive archives zip
