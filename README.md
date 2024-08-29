@@ -5,9 +5,9 @@ lambroll is a simple deployment tool for [AWS Lambda](https://aws.amazon.com/lam
 lambroll does,
 
 - Create a function.
-- Create a Zip archive from local directory.
+- Create a Zip archive from a local directory.
 - Deploy function code / configuration / tags / aliases / function URLs.
-- Rollback a function to previous version.
+- Rollback a function to the previous version.
 - Invoke a function with payloads.
 - Manage function versions.
 - Show status of a function.
@@ -81,7 +81,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: fujiwara/lambroll@v1
         with:
-          version: v1.0.4
+          version: v1.1.0
       - run: |
           lambroll deploy
 ```
@@ -228,13 +228,13 @@ Flags:
       --alias="current"                   alias name for publish
       --alias-to-latest                   set alias to unpublished $LATEST version
       --dry-run                           dry run
-      --skip-archive                      skip to create zip archive. requires Code.S3Bucket and Code.S3Key in function
-                                          definition
-      --keep-versions=0                   Number of latest versions to keep. Older versions will be deleted. (Optional
-                                          value: default 0).
-      --function-url=""                   path to function-url definition
+      --skip-archive                      skip to create zip archive. requires Code.S3Bucket and Code.S3Key in function definition
+      --keep-versions=0                   Number of latest versions to keep. Older versions will be deleted. (Optional value: default 0).
+      --ignore=""                         ignore fields by jq queries in function.json
+      --function-url=""                   path to function-url definition ($LAMBROLL_FUNCTION_URL)
       --skip-function                     skip to deploy a function. deploy function-url only
       --exclude-file=".lambdaignore"      exclude file
+      --symlink                           keep symlink (same as zip --symlink,-y)
 ```
 
 `deploy` works as below.
