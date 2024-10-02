@@ -142,7 +142,7 @@ Flags:
   -h, --help                              Show context-sensitive help.
       --function=STRING                   Function file path ($LAMBROLL_FUNCTION)
       --log-level="info"                  log level (trace, debug, info, warn, error) ($LAMBROLL_LOGLEVEL)
-      --color                             enable colored output ($LAMBROLL_COLOR)
+      --[no-]color                        enable colored output ($LAMBROLL_COLOR)
       --region=REGION                     AWS region ($AWS_REGION)
       --profile=PROFILE                   AWS credential profile name ($AWS_PROFILE)
       --tfstate=TFSTATE                   URL to terraform.tfstate ($LAMBROLL_TFSTATE)
