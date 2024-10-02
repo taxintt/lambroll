@@ -15,7 +15,7 @@ import (
 type Option struct {
 	Function string `help:"Function file path" env:"LAMBROLL_FUNCTION"`
 	LogLevel string `help:"log level (trace, debug, info, warn, error)" default:"info" enum:"trace,debug,info,warn,error" env:"LAMBROLL_LOGLEVEL"`
-	Color    bool   `help:"enable colored output" default:"true" env:"LAMBROLL_COLOR"`
+	Color    bool   `help:"enable colored output" default:"true" env:"LAMBROLL_COLOR" negatable:""`
 
 	Region          *string           `help:"AWS region" env:"AWS_REGION"`
 	Profile         *string           `help:"AWS credential profile name" env:"AWS_PROFILE"`
