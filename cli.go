@@ -15,7 +15,7 @@ import (
 type Option struct {
 	Function string `help:"Function file path" env:"LAMBROLL_FUNCTION"`
 	LogLevel string `help:"log level (trace, debug, info, warn, error)" default:"info" enum:"trace,debug,info,warn,error" env:"LAMBROLL_LOGLEVEL"`
-	Color    bool   `help:"enable colored output" default:"false" env:"LAMBROLL_COLOR"`
+	Color    bool   `help:"enable colored output" default:"true" env:"LAMBROLL_COLOR"`
 
 	Region          *string           `help:"AWS region" env:"AWS_REGION"`
 	Profile         *string           `help:"AWS credential profile name" env:"AWS_PROFILE"`
@@ -73,11 +73,11 @@ func CLI(ctx context.Context, parse CLIParseFunc) (int, error) {
 		return 1, err
 	}
 
-	color.NoColor = opts.Color
+	color.NoColor = !opts.Color
 	filter := &logutils.LevelFilter{
 		Levels: []logutils.LogLevel{"trace", "debug", "info", "warn", "error"},
 		ModifierFuncs: []logutils.ModifierFunc{
-			logutils.Color(color.FgHiWhite),   // trace
+			logutils.Color(color.FgHiWhite), // trace
 			logutils.Color(color.FgHiBlack), // debug
 			nil,                             // info
 			logutils.Color(color.FgYellow),  // warn
