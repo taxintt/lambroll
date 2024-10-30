@@ -25,8 +25,10 @@ import (
 
 var Version string
 
-const versionLatest = "$LATEST"
-const packageTypeImage = "Image"
+const (
+	versionLatest    = "$LATEST"
+	packageTypeImage = "Image"
+)
 
 var retryPolicy = retry.Policy{
 	MinDelay: time.Second,
@@ -35,8 +37,7 @@ var retryPolicy = retry.Policy{
 }
 
 // Function represents configuration of Lambda function
-//type Function = lambda.CreateFunctionInput
-
+// type Function = lambda.CreateFunctionInput
 type Function = lambda.CreateFunctionInput
 
 // Tags represents tags of function
@@ -307,8 +308,9 @@ func newFunctionFrom(c *types.FunctionConfiguration, code *types.FunctionCodeLoc
 	}
 	if v := c.VpcConfig; v != nil && *v.VpcId != "" {
 		fn.VpcConfig = &types.VpcConfig{
-			SubnetIds:        v.SubnetIds,
-			SecurityGroupIds: v.SecurityGroupIds,
+			SubnetIds:               v.SubnetIds,
+			SecurityGroupIds:        v.SecurityGroupIds,
+			Ipv6AllowedForDualStack: v.Ipv6AllowedForDualStack,
 		}
 	}
 
